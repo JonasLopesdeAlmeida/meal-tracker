@@ -3,51 +3,60 @@ package restaurant;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 
 @Component
-@ComponentScan
+@Transactional
 public class OrderService  {
 
     private OrderRepo repo;
+    private OrderValidator validation;
 
-    public OrderService(final OrderRepo repo){
+    public OrderService(OrderRepo repo, OrderValidator validation){
         this.repo = repo;
+        this.validation = validation;
     }
 
-    @Bean
-    public Order save(Order order) {
-        validation(order);
-        return repo.save(order) ;
+
+    public Order addNewOrder(Order order) {
+        if(validation.isValid(order)) {
+            order.setStatus(OrderStatus.NOT_STARTED);
+            order.setDateAndTime(LocalDateTime.now());
+            return repo.save(order);
+        }else {
+            throw new BusinessNegotiationException("Sorry!! no more tables available!");
+        }
     }
 
-    @Bean
-    public Order update(Order order) {
+
+    public void updateOrder(Order order) {
         Objects.requireNonNull(order.getId());
-        return repo.update(order);
+        repo.update(order);
     }
 
-    @Bean
-    public List<Order> findAll(Order order) {
-        return repo.findAll(order);
+
+    public List<Order> findAll() {
+        return repo.findAll();
     }
 
-    @Bean
-    public Order findByStatus(OrderStatus status) {
-        return repo.findByStatus(status);
+
+    public List<Order> findingByStatus (OrderStatus status) {
+        return repo.findAll().stream()
+                .filter(order -> order.getStatus().equals(status))
+                .collect(Collectors.toList());
     }
 
-    @Bean
+
     public Optional<Order> findById(Long id) {
         return repo.findById(id);
     }
 
-    public void validation(Order order){
-        if(order.getTableNumber() > 20){
-            throw new BusinessNegotiationException("Sorry!! No more tables available");
-        }
-    }
+
 }

@@ -7,8 +7,7 @@ public interface OrderRepo {
 
     Order save(Order order);
     Order update(Order order);
-    List<Order> findAll(Order order);
-    Order findByStatus(OrderStatus status);
+    List<Order> findAll();
     Optional<Order> findById(Long id);
 
 

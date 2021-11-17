@@ -1,17 +1,27 @@
 package restaurant;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 public class Order {
 
-    private Long id;
-    private Integer tableNumber;
+    private long id;
+    private int tableNumber;
     private List<String> meals;
-    private LocalDate dateAndTime;
+    private LocalDateTime dateAndTime;
     private OrderStatus status;
 
-    public Order(Long id, Integer tableNumber, List<String> meals, LocalDate dateAndTime, OrderStatus status) {
+    private static long nextId = 1;
+
+    public Order( Integer tableNumber, List<String> meals) {
+        this.id = nextId++;
+        this.tableNumber = tableNumber;
+        this.meals = meals;
+    }
+
+    public Order(long id, int tableNumber, List<String> meals, LocalDateTime dateAndTime, OrderStatus status) {
         this.id = id;
         this.tableNumber = tableNumber;
         this.meals = meals;
@@ -23,15 +33,19 @@ public class Order {
         return id;
     }
 
-    public void setId(Long id) {
-       this.id = id;
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setDateAndTime(LocalDateTime dateAndTime) {
+        this.dateAndTime = dateAndTime;
     }
 
     public Integer getTableNumber() {
         return tableNumber;
     }
 
-    public void setTableNumber(Integer tableNumber) {
+    public void setTableNumber(int tableNumber) {
         this.tableNumber = tableNumber;
     }
 
@@ -43,11 +57,40 @@ public class Order {
         this.meals = meals;
     }
 
-    public LocalDate getDateAndTime() {
+    public LocalDateTime getDateAndTime() {
         return dateAndTime;
     }
 
-    public void setDateAndTime(LocalDate dateAndTime) {
-        this.dateAndTime = dateAndTime;
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return id == order.id && status == order.status;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, status);
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", tableNumber=" + tableNumber +
+                ", meals=" + meals +
+                ", dateAndTime=" + dateAndTime +
+                ", status=" + status +
+                '}';
     }
 }
